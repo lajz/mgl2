@@ -1,15 +1,55 @@
 from abc import ABC, abstractmethod
+from pydantic import BaseModel
+import numpy as np
+from mgl2.utils.constants import DAY_LENGTH
 
-class Prosumer(ABC):
-    def __init__(self, id, state):
-        self.id = id
-        # Dictionary containing relevant attributes
-        self.state = state
 
-    @abstractmethod
-    def step(self, action, descriptor):
+class ProsumerState(BaseModel):
+    
+    def update(action):
         pass
 
-    @abstractmethod
-    def reset(self):
+class ProsumerMetrics(BaseModel):
+
+    def update():
         pass
+
+class Prosumer(BaseModel, ABC):
+    
+    def __init__(self, state : ProsumerState):
+        self.state : ProsumerState = state
+        self.metrics = ProsumerMetrics()
+
+    def update_state(self, action):
+        self.state.update(action)
+
+    @abstractmethod
+    def simulate(self):
+        pass
+    
+
+###
+### Constant Prosumer Example
+###
+
+class ProsumerDayMetrics(ProsumerMetrics):
+
+    step_demand : np.ndarray
+    total_demand : np.ndarray = np.zeros(DAY_LENGTH)
+    
+    def update(self, step_demand : np.ndarray):
+        self.step_demand = step_demand
+        self.total_demand += step_demand
+
+class ConstantProsumer(Prosumer):
+    
+    def __init__(self, state : ProsumerState, demand: np.ndarray):
+        self.state : ProsumerState = state
+        self.metrics = ProsumerDayMetrics()
+        self.demand = demand
+    
+    def simulate(self):
+        ProsumerDayMetrics.update(self.demand)
+        
+        
+
