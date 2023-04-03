@@ -1,2 +1,0 @@
-
-DAY_LENGTH = 24
