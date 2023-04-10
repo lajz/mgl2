@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from pydantic import BaseModel, Field
 import numpy as np
-from mgl2.utils.constants import DAY_LENGTH
+DAY_LENGTH = 7
 
 class ProsumerState(BaseModel):
 
