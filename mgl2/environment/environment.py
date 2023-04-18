@@ -7,14 +7,14 @@ from pydantic import BaseModel
 
 class EnvironmentState(BaseModel):
 
-    def update(action):
+    def update(self, action):
         pass
     
 class EnvironmentMetrics(BaseModel):
-    reward: float
+    microgrid_metrics : MicrogridMetrics = MicrogridMetrics()
     
-    def update(microgrid_metrics):
-        pass
+    def update(self, microgrid_metrics):
+        self.microgrid_metrics = microgrid_metrics
 
 class Environment(ABC):
     
@@ -33,7 +33,7 @@ class Environment(ABC):
     def step(self, action) -> EnvironmentMetrics:
         self.update_state(action)
         self.simulate()
-        return 
+        return self.metrics
 
 ###
 ### Single Microgrid Environment
@@ -57,8 +57,8 @@ class SingleMircogridE(Environment):
         self.microgrid.update_state(action)
 
     def simulate(self) ->  EnvironmentMetrics:
-        microgrid_metrics = self.microgrid.simulate()
-        self.metrics.update(microgrid_metrics)
+        self.microgrid.simulate()
+        self.metrics.update(self.microgrid.metrics)
         return self.metrics
         
 

@@ -1,5 +1,5 @@
 import numpy as np
-from Prosumer import Prosumer, ProsumerState, ProsumerDayMetrics
+from mgl2.prosumer.prosumer import Prosumer, ProsumerState, ProsumerDayMetrics
 from scipy.optimize import linprog
 
 class LPProsumerState(ProsumerState):
