@@ -18,7 +18,7 @@ class EnvironmentMetrics(BaseModel):
 
 class Environment(ABC):
     
-    def __init__(self, state : EnvironmentState):
+    def __init__(self, state : EnvironmentState, **kwargs):
         self.state : EnvironmentState = state
         self.metrics = EnvironmentMetrics()
 

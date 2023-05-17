@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from pydantic import BaseModel, Field
+from pydantic.dataclasses import BaseModel
 import numpy as np
 from mgl2.utils.constants import DAY_LENGTH
 
