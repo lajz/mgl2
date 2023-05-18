@@ -1,12 +1,15 @@
 from abc import ABC, abstractmethod
-from pydantic.dataclasses import BaseModel
+from pydantic import BaseModel
 import numpy as np
 from mgl2.utils.constants import DAY_LENGTH
 
 class ProsumerState(BaseModel):
 
-    def update(action):
+    def update_props(action):
         pass
+    
+    def update(self, action, **kwargs):
+        self.update_props(action)
 
     class Config:
         arbitrary_types_allowed = True
@@ -24,8 +27,8 @@ class Prosumer(ABC):
         self.state : ProsumerState = state
         self.metrics = ProsumerMetrics()
 
-    def update_state(self, action):
-        self.state.update(action)
+    def update_state(self, action, **kwargs):
+        self.state.update(action, **kwargs)
 
     @abstractmethod
     def simulate(self):

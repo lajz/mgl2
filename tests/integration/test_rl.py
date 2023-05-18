@@ -6,16 +6,16 @@ from ray.rllib.algorithms import ppo
 import sys
 sys.path.append('./')
 
-from mgl2.environment.environment import SingleMircogridE, EnvironmentState
+from mgl2.environment.environment import SingleMicrogridE, SingleMicrogridEState
 from mgl2.microgrid.microgrid import BuildingMicrogrid, MicrogridState
 from mgl2.prosumer.RLProsumer import RLProsumer, RLProsumerState
 from mgl2.utils.constants import DAY_LENGTH
 
 class MyEnv(gym.Env): # gym.wrapper
     def __init__(self, env_config):
-        prosumer_list = [RLProsumer(RLProsumerState()), RLProsumer(RLProsumerState())]
-        building_microgrid = BuildingMicrogrid(MicrogridState(), prosumer_list)
-        self.environment = SingleMircogridE(EnvironmentState(), building_microgrid)
+        prosumer_list = [RLProsumer.default(), RLProsumer.default()]
+        building_microgrid = BuildingMicrogrid.default(prosumer_list)
+        self.environment = SingleMicrogridE.default(building_microgrid)
         
         self.action_space = gym.spaces.Box(low=0.0, high=10.0, shape=(DAY_LENGTH,), dtype=np.float32)
         self.observation_space = gym.spaces.Box(low=-20.0, high=20.0, shape=(DAY_LENGTH,), dtype=np.float32)
@@ -24,9 +24,10 @@ class MyEnv(gym.Env): # gym.wrapper
         return np.zeros(DAY_LENGTH)
     
     def step(self, action):
-        metrics = self.environment.step(action)
-        obs = metrics.microgrid_metrics.step_demand
-        return obs,  metrics.microgrid_metrics.reward, True, {}
+        self.environment.step(action)
+        metrics = self.environment.state.microgrid.metrics
+        obs = metrics.step_demand
+        return obs,  metrics.reward, True, {}
         # return <obs>, <reward: float>, <done: bool>, <info: dict>
 
 ray.init()
@@ -40,7 +41,7 @@ while True:
     result = algo.train()
     print(step, result['episode_reward_max'], result['episode_reward_mean'])
         
-    if result['episode_reward_mean'] > -1:
+    if result['episode_reward_mean'] > -10:
         break
     
     step+=1

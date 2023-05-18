@@ -1,12 +1,12 @@
-from mgl2.prosumer.prosumer import Prosumer, ProsumerState, ProsumerDayMetrics
+from mgl2.prosumer.prosumer import Prosumer, PState, ProsumerDayMetrics
 import numpy as np
 
 TARGET_ACTION = np.array([4, 5, 3, 9, 9, 1, 2], dtype=np.float64) / 10
 
-class RLProsumerState(ProsumerState):
+class RLPState(PState):
     energy_demand: np.ndarray
 
-    def update(self, action: np.ndarray):
+    def update_props(self, action: np.ndarray):
         self.energy_demand += action
 
 
@@ -21,7 +21,7 @@ class RLProsumerMetrics(ProsumerDayMetrics):
 
 class RLProsumer(Prosumer):
 
-    def __init__(self, state: RLProsumerState, demand: np.ndarray, energy_price: np.ndarray) -> None:
+    def __init__(self, state: RLPState, demand: np.ndarray, energy_price: np.ndarray) -> None:
         super().__init__(state)
         self.metrics = RLProsumerMetrics(energy_price=energy_price)
         self.demand = demand
