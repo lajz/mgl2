@@ -11,11 +11,18 @@ STATES
 class EnvironmentState(BaseModel):
     
     '''
-    Base Environment state all other environment states should inheiret from this class.
+    Base environment state. All other environment states should inheiret from this class.
     
     The environment state holds all state information for an environment, such as any microgrids or prosumers.
     '''
 
+    def update_sub_states(self, action, **kwargs):
+        '''
+        Update state of sub objects such as microgrids, passing ACTION and KWARGS. 
+        Must ensure that each microgrid and prosumer only has update state called once per step.
+        '''
+        pass
+    
     def update_props(self, action):
         '''
         Update properties of environment based on ACTION
@@ -24,16 +31,9 @@ class EnvironmentState(BaseModel):
         '''
         pass
     
-    def update_sub_states(self, action, **kwargs):
-        '''
-        Update state of sub objects such as microgrids, passing ACTION and KWARGS. 
-        Must ensure that each microgrid and prosumer only has update state called once per step.
-        '''
-        pass
-    
     def update(self, action, **kwargs):
         '''
-        Update state based on ACTION.
+        Update environment and any sub objects state based on ACTION.
         May also pass in KWARGS as supplemental information.
         '''
         self.update_sub_states(action, **kwargs)
@@ -68,12 +68,15 @@ Metrics
 '''
 class EnvironmentMetrics(BaseModel):
     '''
-    Environement Metrics object to hold results from a step such as reward and demand.
+    Environement metrics object to hold results from a step such as reward and demand.
     '''
-    
     def update(self, **kwargs):
         '''Update metrics based on KWARGS.'''
         pass
+    
+    class Config:
+        '''Config class for pydantic.'''
+        arbitrary_types_allowed = True
     
 
 class SingleMicrogridEMetrics(EnvironmentMetrics):
@@ -97,21 +100,21 @@ class Environment(ABC):
     Responsible for updating and simulating contained microgrids and prosumers based on action.
     '''
     def __init__(self, state : EnvironmentState, **kwargs):
-        '''Initialize environment'''
+        ''' Initialize environment. '''
         self.state : EnvironmentState = state
         self.metrics = EnvironmentMetrics()
     
     def update_state(self, action, **kwargs):
-        '''Helper function for updating environment state'''
+        ''' Helper function for updating environment state. '''
         self.state.update(action, **kwargs)
     
     @abstractmethod
     def simulate(self) -> EnvironmentMetrics:
-        '''Simulate a single time step of environment'''
+        ''' Simulate a single time step of environment. '''
         pass
     
     def step(self, action) -> EnvironmentMetrics:
-        '''Update the state and then simulate a single time step of environment'''
+        ''' Update the state and then simulate a single time step of environment. '''
         self.update_state(action)
         self.simulate()
         return self.metrics
