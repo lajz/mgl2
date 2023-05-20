@@ -4,7 +4,6 @@ from mgl2.microgrid.microgrid import Microgrid, MicrogridMetrics
 
 from pydantic import BaseModel
 
-
 class EnvironmentState(BaseModel):
     
     def update_props(self, action):

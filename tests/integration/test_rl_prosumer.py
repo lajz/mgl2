@@ -6,9 +6,9 @@ from ray.rllib.algorithms import ppo
 import sys
 sys.path.append('./')
 
-from mgl2.environment.environment import SingleMicrogridE, SingleMicrogridEState
-from mgl2.microgrid.microgrid import BuildingMicrogrid, MicrogridState
-from mgl2.prosumer.RLProsumer import RLProsumer, RLProsumerState
+from mgl2.environment.environment import SingleMicrogridE
+from mgl2.microgrid.microgrid import BuildingMicrogrid
+from mgl2.prosumer.rl_prosumer import RLProsumer
 from mgl2.utils.constants import DAY_LENGTH
 
 class MyEnv(gym.Env): # gym.wrapper
@@ -30,20 +30,23 @@ class MyEnv(gym.Env): # gym.wrapper
         return obs,  metrics.reward, True, {}
         # return <obs>, <reward: float>, <done: bool>, <info: dict>
 
-ray.init()
-algo = ppo.PPO(env=MyEnv, config={
-    "env_config": {},  # config to pass to env class
-})
+def test_RLProsumer():
+    ray.init()
+    algo = ppo.PPO(env=MyEnv, config={
+        "env_config": {},  # config to pass to env class
+    })
 
-step = 0
-while True:
-    
-    result = algo.train()
-    print(step, result['episode_reward_max'], result['episode_reward_mean'])
+    step = 0
+    while True:
         
-    if result['episode_reward_mean'] > -10:
-        break
-    
-    step+=1
+        result = algo.train()
+        print(step, result['episode_reward_max'], result['episode_reward_mean'])
+            
+        if result['episode_reward_mean'] > -10:
+            break
+        
+        assert step < 50
+        step+=1
 
-print(f"{step} steps required to train.")
+    print(f"{step} steps required to train.")
+    
