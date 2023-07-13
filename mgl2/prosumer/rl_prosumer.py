@@ -6,7 +6,7 @@ TARGET_ACTION = np.array([4, 5, 3, 9, 9, 1, 2], dtype=np.float64)
 
 class RLProsumerState(ProsumerState):
     energy_demand: np.ndarray = np.zeros(DAY_LENGTH)
-    
+
     def update_props(self, action: np.ndarray):
         self.energy_demand = action
 
@@ -28,9 +28,7 @@ class RLProsumer(Prosumer):
     @classmethod
     def default(cls) -> "RLProsumer":
         return cls(RLProsumerState())
-    
+
     def simulate(self):
         self.metrics.update(step_demand=self.state.energy_demand)
         # print({'demand': self.state.energy_demand, 'reward': self.metrics.reward})
-
-
